@@ -2,8 +2,10 @@ import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 
 dotenv.config();
-console.log("Intentando conectar a:", process.env.DB_HOST, "en el puerto:", process.env.DB_PORT);
-const db = mysql.createPool({
+
+// Creamos el pool usando la URL completa si está disponible, 
+// de lo contrario usa las variables individuales.
+const poolConfig = process.env.DATABASE_URL || {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -11,10 +13,10 @@ const db = mysql.createPool({
     port: process.env.DB_PORT || 3306,
     waitForConnections: true,
     connectionLimit: 5,
-    queueLimit: 0,
-    // Estabilidad para Railway:
     enableKeepAlive: true,
     keepAliveInitialDelay: 10000
-});
+};
+
+const db = mysql.createPool(poolConfig);
 
 export default db;
