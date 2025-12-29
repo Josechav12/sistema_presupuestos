@@ -3,9 +3,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import viewRoutes from './src/api/routes/view.routes.js';
-import ExcelJS from 'exceljs';
-// IMPORTA AQUÍ TU MODELO (Ajusta la ruta según tu proyecto)
-// import Movimiento from './src/api/models/movimiento.model.js'; 
 
 dotenv.config();
 const app = express();
@@ -31,6 +28,6 @@ app.use((req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT,'0.0.0.0',() => {
     console.log(`\n🚀 Servidor corriendo en: http://localhost:${PORT}`);
 });
