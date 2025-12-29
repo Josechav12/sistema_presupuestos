@@ -1,3 +1,5 @@
+import { MovimientoModel } from '../models/movimientoModel.js';
+
 export const getDashboard = async (req, res) => {
     try {
         // Ejecutamos todo en paralelo
@@ -39,6 +41,7 @@ export const getDashboard = async (req, res) => {
             return res.status(503).send("La base de datos está reiniciando. Refresca en 5 segundos.");
         }
         
-        res.status(500).render('500', { error: "Error interno del servidor" });
+        // Cambiamos el render por send para que no falle si no tienes el archivo 500.ejs
+        res.status(500).send("Error interno del servidor: " + error.message);
     }
 };
