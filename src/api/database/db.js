@@ -2,7 +2,7 @@ import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 
 dotenv.config();
-
+console.log("Intentando conectar a:", process.env.DB_HOST, "en el puerto:", process.env.DB_PORT);
 const db = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
