@@ -22,9 +22,9 @@ app.set('view engine', 'ejs');
 // --- RUTAS PRINCIPALES ---
 app.use('/', viewRoutes);
 
-// --- MANEJO DE ERRORES 404 (Al final) ---
+// Manejo de 404
 app.use((req, res) => {
-    res.status(404).render('404', { title: 'Página no encontrada' });
+    res.status(404).send('Página no encontrada');
 });
 
 const PORT = process.env.PORT || 3000;
