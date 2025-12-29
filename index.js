@@ -22,9 +22,16 @@ app.set('view engine', 'ejs');
 // --- RUTAS PRINCIPALES ---
 app.use('/', viewRoutes);
 
-// Manejo de 404
+// --- MANEJO DE ERRORES 404 ---
 app.use((req, res) => {
-    res.status(404).send('Página no encontrada');
+    // Usamos .send() en lugar de .render() para que no busque archivos ejs
+    res.status(404).send('<h1>404 - Página no encontrada</h1><a href="/">Volver al Dashboard</a>');
+});
+
+// --- MANEJO DE ERRORES CRÍTICOS (500) ---
+app.use((err, req, res, next) => {
+    console.error("❌ Error interno:", err.stack);
+    res.status(500).send('<h1>500 - Error Interno del Servidor</h1>');
 });
 
 const PORT = process.env.PORT || 3000;
