@@ -8,14 +8,12 @@ const db = mysql.createPool({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    port: process.env.DB_PORT || 3306,
+    port: process.env.DB_PORT || 42280, // Usa el puerto de Railway
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 5, // Bajamos el límite para ser más eficientes en la nube
     queueLimit: 0,
-    // Agrega esto para evitar desconexiones:
-    enableKeepAlive: true,
-    keepAliveInitialDelay: 10000,
-    connectTimeout: 10000
+    enableKeepAlive: true, // Mantiene la conexión activa
+    keepAliveInitialDelay: 10000 
 });
 
 export default db;
