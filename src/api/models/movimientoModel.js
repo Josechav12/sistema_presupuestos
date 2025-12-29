@@ -58,15 +58,15 @@ export const MovimientoModel = {
         const { monto, categoria_id, descripcion } = nuevosDatos;
         // 1. Anulamos el original
         await db.query('UPDATE movimientos SET activo = 0 WHERE id = ?', [id_original]);
-        
+
         // 2. Recuperamos la fecha original para que no cambie el historial
         const [original] = await db.query('SELECT fecha_operacion FROM movimientos WHERE id = ?', [id_original]);
         const fecha = original[0].fecha_operacion;
-        
+
         // 3. Limpiamos descripción para no acumular el prefijo [MODIFICADO]
         const limpiaDesc = descripcion.replace('[MODIFICADO] - ', '');
         const nuevaDesc = `[MODIFICADO] - ${limpiaDesc}`;
-        
+
         return await db.query(
             'INSERT INTO movimientos (monto, categoria_id, fecha_operacion, descripcion, activo) VALUES (?, ?, ?, ?, 1)',
             [monto, categoria_id, fecha, nuevaDesc]
@@ -87,35 +87,34 @@ export const MovimientoModel = {
 
     getDatosGraficoMensual: async () => {
         const [rows] = await db.query(`
-            SELECT 
-                DATE_FORMAT(m.fecha_operacion, '%b') AS mes,
-                SUM(CASE WHEN t.nombre = 'Ingreso' THEN m.monto ELSE 0 END) AS ingresos,
-                SUM(CASE WHEN t.nombre IN ('Gasto', 'Egreso') THEN m.monto ELSE 0 END) AS gastos
-            FROM movimientos m
-            JOIN categorias c ON m.categoria_id = c.id
-            JOIN tipos t ON c.tipo_id = t.id
-            WHERE m.fecha_operacion >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND m.activo = 1
-            GROUP BY YEAR(m.fecha_operacion), MONTH(m.fecha_operacion), mes
-            ORDER BY m.fecha_operacion ASC
-        `);
+        SELECT 
+            DATE_FORMAT(m.fecha_operacion, '%b') AS mes,
+            SUM(CASE WHEN t.nombre = 'Ingreso' THEN m.monto ELSE 0 END) AS ingresos,
+            SUM(CASE WHEN t.nombre IN ('Gasto', 'Egreso') THEN m.monto ELSE 0 END) AS gastos
+        FROM movimientos m
+        JOIN categorias c ON m.categoria_id = c.id
+        JOIN tipos t ON c.tipo_id = t.id
+        WHERE m.fecha_operacion >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND m.activo = 1
+        GROUP BY YEAR(m.fecha_operacion), MONTH(m.fecha_operacion), mes
+        ORDER BY YEAR(m.fecha_operacion) ASC, MONTH(m.fecha_operacion) ASC -- Ordenamos por las columnas agrupadas
+    `);
         return rows;
     },
 
     getDatosGraficoDiario: async () => {
         const [rows] = await db.query(`
-            SELECT 
-                DATE_FORMAT(m.fecha_operacion, '%d/%m') AS etiqueta,
-                MONTH(m.fecha_operacion) AS mes_num,
-                SUM(CASE WHEN t.nombre = 'Ingreso' THEN m.monto ELSE 0 END) AS ingresos,
-                SUM(CASE WHEN t.nombre IN ('Gasto', 'Egreso') THEN m.monto ELSE 0 END) AS gastos
-            FROM movimientos m
-            JOIN categorias c ON m.categoria_id = c.id
-            JOIN tipos t ON c.tipo_id = t.id
-            WHERE m.fecha_operacion >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-            AND m.activo = 1
-            GROUP BY m.fecha_operacion
-            ORDER BY m.fecha_operacion ASC
-        `);
+        SELECT 
+            DATE_FORMAT(m.fecha_operacion, '%d/%m') AS etiqueta,
+            SUM(CASE WHEN t.nombre = 'Ingreso' THEN m.monto ELSE 0 END) AS ingresos,
+            SUM(CASE WHEN t.nombre IN ('Gasto', 'Egreso') THEN m.monto ELSE 0 END) AS gastos
+        FROM movimientos m
+        JOIN categorias c ON m.categoria_id = c.id
+        JOIN tipos t ON c.tipo_id = t.id
+        WHERE m.fecha_operacion >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+        AND m.activo = 1
+        GROUP BY etiqueta, m.fecha_operacion -- Agregamos fecha_operacion al grupo para poder ordenar por ella
+        ORDER BY m.fecha_operacion ASC
+    `);
         return rows;
     },
 
