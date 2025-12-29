@@ -1,0 +1,294 @@
+/* --- ESTRUCTURA PRINCIPAL --- */
+.main-content {
+    flex: 1;
+    padding: 1.5rem;
+}
+
+.page-header { 
+    margin-bottom: 1.25rem; 
+}
+
+.page-title { 
+    font-size: 1.125rem; 
+    font-weight: bold; 
+    color: #1f2937; 
+}
+
+.page-subtitle { 
+    color: #9ca3af; 
+    font-size: 10px; 
+    font-style: italic; 
+}
+
+/* --- DASHBOARD: MÉTRICAS --- */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+    .metrics-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.card-metric {
+    background: white;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.metric-label { 
+    font-size: 0.75rem; 
+    color: #6b7280; 
+    font-weight: 500; 
+}
+
+.metric-value { 
+    font-size: 1.25rem; 
+    font-weight: bold; 
+    color: #1f2937; 
+}
+
+.icon-box { 
+    padding: 0.5rem; 
+    border-radius: 0.5rem; 
+    color: white; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Colores de Iconos */
+.bg-income    { background-color: #22c55e; }
+.bg-expense   { background-color: #ef4444; }
+.bg-outflow   { background-color: #f97316; } /* Naranja Egresos */
+.bg-balance   { background-color: #3b82f6; }
+.bg-available { background-color: #a855f7; }
+
+/* --- DASHBOARD: GRÁFICOS --- */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .charts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.card-chart {
+    background: white;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    border: 1px solid #f3f4f6;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.chart-title { 
+    font-size: 10px; 
+    font-weight: bold; 
+    color: #9ca3af; 
+    text-transform: uppercase; 
+    letter-spacing: 0.05em; 
+}
+
+/* --- TABLAS (HISTORIAL) --- */
+.table-container {
+    background: white;
+    border-radius: 0.75rem;
+    border: 1px solid #f3f4f6;
+    overflow: hidden;
+}
+
+.table-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #f3f4f6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(249, 250, 251, 0.3);
+}
+
+.custom-table { 
+    width: 100%; 
+    text-align: left; 
+    font-size: 11px; 
+    border-collapse: collapse; 
+}
+
+.custom-table tr { 
+    border-bottom: 1px solid #f9fafb; 
+    transition: background 0.2s; 
+}
+
+.custom-table tr:hover { 
+    background: rgba(249, 250, 251, 0.5); 
+}
+
+.custom-table td { 
+    padding: 0.75rem 1.5rem; 
+}
+
+/* --- FILTROS Y BUSQUEDA (Vista Movimientos) --- */
+.filter-bar {
+    background: white;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .filter-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+.select-filter {
+    font-size: 9px;
+    font-weight: bold;
+    border: none;
+    background: #eff6ff;
+    color: #2563eb;
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    outline: none;
+}
+
+/* --- COMPONENTES DE FORMULARIO (Crear Movimiento) --- */
+.form-container-centered {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 2.5rem;
+}
+
+.card-form {
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.form-label {
+    display: block;
+    font-size: 9px;
+    font-weight: bold;
+    color: #9ca3af;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.input-field {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.25rem;
+    font-size: 11px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-field:focus { border-color: #3b82f6; }
+
+.input-xl {
+    font-size: 1.25rem;
+    font-weight: bold;
+    padding: 0.75rem;
+    background-color: #f9fafb;
+    border: 1px solid #f3f4f6;
+    border-radius: 0.75rem;
+    width: 100%;
+    transition: all 0.2s;
+}
+
+.input-xl:focus {
+    border-color: #3b82f6;
+    background-color: white;
+    outline: none;
+}
+
+/* --- BOTONES --- */
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+}
+
+.btn-primary { background: #2563eb; color: white; }
+.btn-primary:hover { background: #1d4ed8; }
+
+.btn-secondary { background: #f3f4f6; color: #6b7280; }
+.btn-secondary:hover { background: #e5e7eb; }
+
+.btn-xl {
+    width: 100%;
+    padding: 1rem;
+    background: #2563eb;
+    color: white;
+    border-radius: 0.75rem;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
+    transition: all 0.2s;
+}
+
+.btn-xl:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+/* --- MODALES --- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 50;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 0.75rem;
+    width: 100%;
+    max-width: 320px;
+    padding: 1.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+}

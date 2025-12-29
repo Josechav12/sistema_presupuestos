@@ -1,0 +1,166 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar') %>
+
+<main class="main-content">
+
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
+        <form action="/movimientos" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            
+            <div class="md:col-span-4">
+                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1 tracking-wider">Buscar</label>
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                    <input type="text" name="search" value="<%= filtros.search || '' %>" placeholder="Descripción..." class="input-field pl-9 w-full">
+                </div>
+            </div>
+
+            <div class="md:col-span-3">
+                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1 tracking-wider">Tipo</label>
+                <select name="tipo" class="input-field w-full cursor-pointer">
+                    <option value="">Todos los tipos</option>
+                    <option value="Ingreso" <%=filtros.tipo==='Ingreso' ? 'selected' : '' %>>Ingresos</option>
+                    <option value="Egreso" <%=filtros.tipo==='Egreso' ? 'selected' : '' %>>Egresos</option>
+                    <option value="Gasto" <%=filtros.tipo==='Gasto' ? 'selected' : '' %>>Gastos</option>
+                </select>
+            </div>
+
+            <div class="md:col-span-3">
+                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1 tracking-wider">Categoría</label>
+                <select name="categoria" class="input-field w-full cursor-pointer">
+                    <option value="">Todas las categorías</option>
+                    <% ['Ingreso', 'Egreso', 'Gasto'].forEach(tipo => { %>
+                        <optgroup label="<%= tipo.toUpperCase() %>">
+                            <% categorias[tipo].forEach(cat => { %>
+                                <option value="<%= cat.id %>" <%= filtros.categoria == cat.id ? 'selected' : '' %>><%= cat.nombre %></option>
+                            <% }) %>
+                        </optgroup>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="md:col-span-2 flex gap-2">
+                <button type="submit" class="btn btn-primary flex-1 h-[38px] flex items-center justify-center gap-2">
+                    <i class="fas fa-filter text-[10px]"></i> Filtrar
+                </button>
+                <a href="/movimientos" class="btn btn-secondary w-[38px] h-[38px] flex items-center justify-center" title="Limpiar filtros">
+                    <i class="fas fa-undo"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table class="custom-table">
+            <thead class="bg-gray-50/50">
+                <tr>
+                    <th class="px-5 py-3 chart-title">Fecha</th>
+                    <th class="px-5 py-3 chart-title">Categoría</th>
+                    <th class="px-5 py-3 chart-title">Descripción</th>
+                    <th class="px-5 py-3 chart-title text-right">Monto</th>
+                    <th class="px-5 py-3 chart-title text-center">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+            <% movimientos.forEach(mov => { %>
+                <% 
+                    const esInactivo = (mov.activo === 0); 
+                    
+                    // Lógica de colores por Tipo
+                    let colorClase = 'gray-500'; // Por defecto
+                    let puntoClase = 'bg-gray-400';
+
+                    if (mov.tipo === 'Ingreso') {
+                        colorClase = 'text-green-600';
+                        puntoClase = 'bg-green-500';
+                    } else if (mov.tipo === 'Gasto') {
+                        colorClase = 'text-red-600';
+                        puntoClase = 'bg-red-500';
+                    } else if (mov.tipo === 'Egreso') {
+                        colorClase = 'text-orange-500';
+                        puntoClase = 'bg-orange-500';
+                    }
+                %>
+                <tr class="hover:bg-gray-50/50 transition-colors">
+                    <td class="px-6 py-4 text-sm text-gray-400">
+                        <%= new Date(mov.fecha_operacion).toLocaleDateString('es-AR') %>
+                    </td>
+                    <td class="px-6 py-4 font-bold text-gray-700">
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-3 <%= puntoClase %> <%= esInactivo ? 'opacity-30' : '' %>"></span>
+                            <span class="<%= esInactivo ? 'opacity-40' : '' %>"><%= mov.categoria %></span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500 <%= esInactivo ? 'opacity-40 italic' : '' %>">
+                        <%= mov.descripcion %>
+                    </td>
+                    <td class="px-6 py-4 text-right font-black <%= colorClase %> <%= esInactivo ? 'opacity-20' : '' %>">
+                        <%= mov.tipo === 'Ingreso' ? '+' : '-' %>$<%= Math.floor(mov.monto).toLocaleString('es-AR') %>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <% if (!esInactivo) { %>
+                            <button onclick='openEditModal(<%- JSON.stringify(mov) %>)' class="text-blue-400 hover:text-blue-600">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        <% } else { %>
+                            <i class="fas fa-lock text-gray-200" title="Registro anulado"></i>
+                        <% } %>
+                    </td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div id="modalEditar" class="modal-overlay">
+    <div class="modal-content">
+        <h3 class="text-sm font-bold text-gray-800 uppercase mb-4 text-center">Modificar Registro</h3>
+        <form action="/movimientos/modificar" method="POST" class="space-y-4">
+            <input type="hidden" name="id_original" id="edit_id">
+            
+            <div>
+                <label class="form-label">Monto ($)</label>
+                <input type="number" step="0.01" name="monto" id="edit_monto" required class="input-field font-bold">
+            </div>
+
+            <div>
+                <label class="form-label">Categoría</label>
+                <select name="categoria_id" id="edit_cat" required class="input-field">
+                    <% ['Ingreso', 'Egreso', 'Gasto'].forEach(tipo => { %>
+                        <optgroup label="── <%= tipo.toUpperCase() %> ──">
+                            <% categorias[tipo].forEach(cat => { %>
+                                <option value="<%= cat.id %>"><%= cat.nombre %></option>
+                            <% }) %>
+                        </optgroup>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div>
+                <label class="form-label">Descripción</label>
+                <textarea name="descripcion" id="edit_desc" rows="2" class="input-field"></textarea>
+            </div>
+
+            <div class="pt-2">
+                <button type="submit" class="btn btn-primary w-full uppercase tracking-widest">Actualizar</button>
+                <button type="button" onclick="closeEditModal()" class="btn btn-secondary w-full mt-2 uppercase">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openEditModal(mov) {
+        document.getElementById('edit_id').value = mov.id;
+        document.getElementById('edit_monto').value = mov.monto;
+        document.getElementById('edit_cat').value = mov.categoria_id;
+        document.getElementById('edit_desc').value = (mov.descripcion || '').replace('[MODIFICADO] - ', '');
+        document.getElementById('modalEditar').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+        document.getElementById('modalEditar').style.display = 'none';
+    }
+</script>
+</body>
+</html>

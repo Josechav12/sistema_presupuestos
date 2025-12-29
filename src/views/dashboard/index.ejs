@@ -1,0 +1,150 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar') %>
+
+<main class="main-content">
+    <div class="metrics-grid">
+        <div class="card-metric">
+            <div>
+                <p class="metric-label">Ingresos Totales</p>
+                <h3 class="metric-value">$<%= Math.floor(metrics.ingresos).toLocaleString('es-AR') %></h3>
+            </div>
+            <div class="icon-box bg-income"><i class="fas fa-arrow-trend-up"></i></div>
+        </div>
+
+        <div class="card-metric">
+            <div>
+                <p class="metric-label">Gastos Totales</p>
+                <h3 class="metric-value">$<%= Math.floor(metrics.gastos).toLocaleString('es-AR') %></h3>
+            </div>
+            <div class="icon-box bg-expense"><i class="fas fa-arrow-trend-down"></i></div>
+        </div>
+
+        <div class="card-metric">
+            <div>
+                <p class="metric-label">Egresos Totales</p>
+                <h3 class="metric-value">$<%= Math.floor(metrics.egresos).toLocaleString('es-AR') %></h3>
+            </div>
+            <div class="icon-box bg-outflow">
+                <i class="fas fa-arrow-right-from-bracket"></i>
+            </div>
+        </div>
+
+        <div class="card-metric">
+            <div>
+                <p class="metric-label">Fondos Disponibles</p>
+                <h3 class="metric-value">$<%= Math.floor(metrics.disponible).toLocaleString('es-AR') %></h3>
+            </div>
+            <div class="icon-box bg-available"><i class="fas fa-wallet"></i></div>
+        </div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="card-chart">
+            <div class="chart-header">
+                <h3 class="chart-title">INGRESOS VS GASTOS</h3>
+                <div class="flex gap-2">
+                    <select id="timeFilter" class="select-filter">
+                        <option value="meses">TODOS LOS MESES</option>
+                        <option value="dias">X DIAS DEL ULTIMO MES</option>
+                    </select>
+                </div>
+            </div>
+            <div style="height: 200px; position: relative;"><canvas id="lineChart"></canvas></div>
+        </div>
+
+        <div class="card-chart">
+            <div class="chart-header">
+                <h3 id="barTitle" class="chart-title">POR CATEGORÍA</h3>
+                <select id="typeFilter" class="select-filter">
+                    <option value="Ingreso">INGRESOS</option>
+                    <option value="Gasto">GASTOS</option>
+                    <option value="Egreso">EGRESOS</option>
+                </select>
+            </div>
+            <div style="height: 200px; position: relative;"><canvas id="barChart"></canvas></div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="custom-table">
+            <tbody>
+                <% (locals.ultimosMovimientos || []).forEach(mov=> { %>
+                    <tr>
+                        <td class="flex items-center gap-3">
+                            <div class="w-7 h-7 rounded flex items-center justify-center <%= mov.tipo === 'Ingreso' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' %>">
+                                <i class="fas <%= mov.tipo === 'Ingreso' ? 'fa-arrow-up' : 'fa-arrow-down' %> text-[10px]"></i>
+                            </div>
+                            <span class="font-semibold text-gray-700 text-xs"><%= mov.descripcion %></span>
+                        </td>
+                        <td class="text-gray-400 text-[10px] uppercase font-black"><%= mov.categoria %></td>
+                        <td class="text-right font-bold text-xs <%= mov.tipo === 'Ingreso' ? 'text-green-600' : 'text-red-600' %>">
+                            $<%= Math.floor(mov.monto).toLocaleString('es-AR') %>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    window.onload = function () {
+        const dataM = <%- JSON.stringify(chartData) %>;
+        const dataD = <%- JSON.stringify(chartDayData) %>;
+        const catIng = <%- JSON.stringify(catIng) %>;
+        const catGas = <%- JSON.stringify(catGas) %>;
+        const catEgr = <%- JSON.stringify(catEgr) %>;
+
+        const lineCtx = document.getElementById('lineChart').getContext('2d');
+        let lineChart = new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: dataM.map(d => d.mes),
+                datasets: [
+                    { label: 'Ingresos', data: dataM.map(d => d.ingresos), borderColor: '#22c55e', backgroundColor: 'rgba(34, 197, 94, 0.1)', fill: true, tension: 0.4 },
+                    { label: 'Gastos', data: dataM.map(d => d.gastos), borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.4 }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        document.getElementById('timeFilter').addEventListener('change', (e) => {
+            if (e.target.value === 'dias') {
+                const mesActual = new Date().getMonth() + 1;
+                const filtrados = dataD.filter(d => d.mes_num == mesActual);
+                const source = filtrados.length > 0 ? filtrados : dataD.slice(-15);
+                lineChart.data.labels = source.map(d => d.etiqueta);
+                lineChart.data.datasets[0].data = source.map(d => d.ingresos);
+                lineChart.data.datasets[1].data = source.map(d => d.gastos);
+            } else {
+                lineChart.data.labels = dataM.map(d => d.mes);
+                lineChart.data.datasets[0].data = dataM.map(d => d.ingresos);
+                lineChart.data.datasets[1].data = dataM.map(d => d.gastos);
+            }
+            lineChart.update();
+        });
+
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        let barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: catIng.map(d => d.categoria),
+                datasets: [{ label: 'Total', data: catIng.map(d => d.total), backgroundColor: '#3b82f6' }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        document.getElementById('typeFilter').addEventListener('change', (e) => {
+            const val = e.target.value;
+            let source = catIng;
+            let color = '#3b82f6';
+            if (val === 'Gasto') { source = catGas; color = '#ef4444'; }
+            if (val === 'Egreso') { source = catEgr; color = '#f97316'; }
+            barChart.data.labels = source.map(d => d.categoria);
+            barChart.data.datasets[0].data = source.map(d => d.total);
+            barChart.data.datasets[0].backgroundColor = color;
+            barChart.update();
+        });
+    };
+</script>
