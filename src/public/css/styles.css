@@ -1,7 +1,22 @@
 /* --- ESTRUCTURA PRINCIPAL --- */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden; /* Evita el balanceo horizontal de toda la pantalla */
+}
+
 .main-content {
     flex: 1;
     padding: 1.5rem;
+    width: 100%;
+    max-width: 100vw; /* Asegura que el contenido nunca sea más ancho que la pantalla */
+    box-sizing: border-box;
+}
+
+/* Ajuste necesario para que el menú inferior no tape el contenido */
+@media (max-width: 768px) {
+    .main-content {
+        padding-bottom: 6rem; 
+    }
 }
 
 .page-header { 
@@ -67,7 +82,7 @@
 /* Colores de Iconos */
 .bg-income    { background-color: #22c55e; }
 .bg-expense   { background-color: #ef4444; }
-.bg-outflow   { background-color: #f97316; } /* Naranja Egresos */
+.bg-outflow   { background-color: #f97316; } 
 .bg-balance   { background-color: #3b82f6; }
 .bg-available { background-color: #a855f7; }
 
@@ -111,6 +126,14 @@
     border-radius: 0.75rem;
     border: 1px solid #f3f4f6;
     overflow: hidden;
+    width: 100%;
+}
+
+.overflow-x-auto {
+    overflow-x: auto;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    display: block; /* Asegura que el contenedor se comporte como bloque para el scroll */
 }
 
 .table-header {
@@ -127,6 +150,7 @@
     text-align: left; 
     font-size: 11px; 
     border-collapse: collapse; 
+    table-layout: auto; /* Permite que la tabla se ajuste al contenido interno */
 }
 
 .custom-table tr { 
@@ -140,9 +164,10 @@
 
 .custom-table td { 
     padding: 0.75rem 1.5rem; 
+    white-space: nowrap; /* Evita que el texto rompa líneas y deforme la fila */
 }
 
-/* --- FILTROS Y BUSQUEDA (Vista Movimientos) --- */
+/* --- FILTROS Y BUSQUEDA --- */
 .filter-bar {
     background: white;
     padding: 1rem;
@@ -173,7 +198,7 @@
     outline: none;
 }
 
-/* --- COMPONENTES DE FORMULARIO (Crear Movimiento) --- */
+/* --- FORMULARIOS --- */
 .form-container-centered {
     display: flex;
     justify-content: center;
@@ -189,6 +214,7 @@
     border-radius: 1.25rem;
     border: 1px solid #f3f4f6;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    margin: 0 auto;
 }
 
 .form-label {
@@ -221,13 +247,6 @@
     border: 1px solid #f3f4f6;
     border-radius: 0.75rem;
     width: 100%;
-    transition: all 0.2s;
-}
-
-.input-xl:focus {
-    border-color: #3b82f6;
-    background-color: white;
-    outline: none;
 }
 
 /* --- BOTONES --- */
@@ -245,10 +264,7 @@
 }
 
 .btn-primary { background: #2563eb; color: white; }
-.btn-primary:hover { background: #1d4ed8; }
-
 .btn-secondary { background: #f3f4f6; color: #6b7280; }
-.btn-secondary:hover { background: #e5e7eb; }
 
 .btn-xl {
     width: 100%;
@@ -263,12 +279,6 @@
     border: none;
     cursor: pointer;
     box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
-    transition: all 0.2s;
-}
-
-.btn-xl:hover {
-    background: #1d4ed8;
-    transform: translateY(-1px);
 }
 
 /* --- MODALES --- */

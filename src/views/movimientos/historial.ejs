@@ -1,9 +1,10 @@
 <%- include('../partials/head') %>
 <%- include('../partials/sidebar') %>
 <%- include('../partials/bottom-nav') %>
-<main class="main-content">
 
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
+<main class="main-content pb-24 md:pb-0">
+
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 mx-2 md:mx-0">
         <form action="/movimientos" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
             
             <div class="md:col-span-4">
@@ -49,66 +50,66 @@
         </form>
     </div>
 
-    <div class="table-container">
-        <table class="custom-table">
-            <thead class="bg-gray-50/50">
-                <tr>
-                    <th class="px-5 py-3 chart-title">Fecha</th>
-                    <th class="px-5 py-3 chart-title">Categoría</th>
-                    <th class="px-5 py-3 chart-title">Descripción</th>
-                    <th class="px-5 py-3 chart-title text-right">Monto</th>
-                    <th class="px-5 py-3 chart-title text-center">Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-            <% movimientos.forEach(mov => { %>
-                <% 
-                    const esInactivo = (mov.activo === 0); 
-                    
-                    // Lógica de colores por Tipo
-                    let colorClase = 'gray-500'; // Por defecto
-                    let puntoClase = 'bg-gray-400';
+    <div class="table-container mx-2 md:mx-0">
+        <div class="overflow-x-auto w-full">
+            <table class="custom-table min-w-full">
+                <thead class="bg-gray-50/50">
+                    <tr>
+                        <th class="px-5 py-3 chart-title hidden md:table-cell">Fecha</th>
+                        <th class="px-5 py-3 chart-title">Categoría</th>
+                        <th class="px-5 py-3 chart-title">Descripción</th>
+                        <th class="px-5 py-3 chart-title text-right">Monto</th>
+                        <th class="px-5 py-3 chart-title text-center">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <% movimientos.forEach(mov => { %>
+                    <% 
+                        const esInactivo = (mov.activo === 0); 
+                        let colorClase = 'gray-500'; 
+                        let puntoClase = 'bg-gray-400';
 
-                    if (mov.tipo === 'Ingreso') {
-                        colorClase = 'text-green-600';
-                        puntoClase = 'bg-green-500';
-                    } else if (mov.tipo === 'Gasto') {
-                        colorClase = 'text-red-600';
-                        puntoClase = 'bg-red-500';
-                    } else if (mov.tipo === 'Egreso') {
-                        colorClase = 'text-orange-500';
-                        puntoClase = 'bg-orange-500';
-                    }
-                %>
-                <tr class="hover:bg-gray-50/50 transition-colors">
-                    <td class="px-6 py-4 text-sm text-gray-400">
-                        <%= new Date(mov.fecha_operacion).toLocaleDateString('es-AR') %>
-                    </td>
-                    <td class="px-6 py-4 font-bold text-gray-700">
-                        <div class="flex items-center">
-                            <span class="w-2 h-2 rounded-full mr-3 <%= puntoClase %> <%= esInactivo ? 'opacity-30' : '' %>"></span>
-                            <span class="<%= esInactivo ? 'opacity-40' : '' %>"><%= mov.categoria %></span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 text-sm text-gray-500 <%= esInactivo ? 'opacity-40 italic' : '' %>">
-                        <%= mov.descripcion %>
-                    </td>
-                    <td class="px-6 py-4 text-right font-black <%= colorClase %> <%= esInactivo ? 'opacity-20' : '' %>">
-                        <%= mov.tipo === 'Ingreso' ? '+' : '-' %>$<%= Math.floor(mov.monto).toLocaleString('es-AR') %>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <% if (!esInactivo) { %>
-                            <button onclick='openEditModal(<%- JSON.stringify(mov) %>)' class="text-blue-400 hover:text-blue-600">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        <% } else { %>
-                            <i class="fas fa-lock text-gray-200" title="Registro anulado"></i>
-                        <% } %>
-                    </td>
-                </tr>
-            <% }) %>
-            </tbody>
-        </table>
+                        if (mov.tipo === 'Ingreso') {
+                            colorClase = 'text-green-600';
+                            puntoClase = 'bg-green-500';
+                        } else if (mov.tipo === 'Gasto') {
+                            colorClase = 'text-red-600';
+                            puntoClase = 'bg-red-500';
+                        } else if (mov.tipo === 'Egreso') {
+                            colorClase = 'text-orange-500';
+                            puntoClase = 'bg-orange-500';
+                        }
+                    %>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                        <td class="px-6 py-4 text-sm text-gray-400 hidden md:table-cell">
+                            <%= new Date(mov.fecha_operacion).toLocaleDateString('es-AR') %>
+                        </td>
+                        <td class="px-6 py-4 font-bold text-gray-700">
+                            <div class="flex items-center">
+                                <span class="w-2 h-2 rounded-full mr-3 <%= puntoClase %> <%= esInactivo ? 'opacity-30' : '' %>"></span>
+                                <span class="<%= esInactivo ? 'opacity-40' : '' %> text-xs md:text-sm"><%= mov.categoria %></span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-xs md:text-sm text-gray-500 <%= esInactivo ? 'opacity-40 italic' : '' %>">
+                            <%= mov.descripcion %>
+                        </td>
+                        <td class="px-6 py-4 text-right font-black text-xs md:text-sm <%= colorClase %> <%= esInactivo ? 'opacity-20' : '' %>">
+                            <%= mov.tipo === 'Ingreso' ? '+' : '-' %>$<%= Math.floor(mov.monto).toLocaleString('es-AR') %>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <% if (!esInactivo) { %>
+                                <button onclick='openEditModal(<%- JSON.stringify(mov) %>)' class="text-blue-400 hover:text-blue-600 p-1">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            <% } else { %>
+                                <i class="fas fa-lock text-gray-200" title="Registro anulado"></i>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }) %>
+                </tbody>
+            </table>
+        </div>
     </div>
 </main>
 
